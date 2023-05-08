@@ -2,16 +2,13 @@ from board import Checkerboard
 
 
  
+# Initialization of object
+board = Checkerboard()
 
-check = Cheeckers(player)
-comp=Computer()
-check.setPieces()
-check.printBoard()
 
+# Main logic of game in endless loop
 while True:
-    
-    
-    check.move()
-    check.printBoard()
-    comp.move()
-    check.printBoard()
+    board.move(player)
+    board.printBoard()
+    board.move(computer)
+    board.printBoard()
