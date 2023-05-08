@@ -1,17 +1,18 @@
 import os
 import math
 from colorama import init, Fore, Back, Style
+from players import Players
 
 class Checkerboard():
+
+    players = Players()
 
     # Initialization of colorama packet
     init()
 
-    # Initializaton of arguments
-    def __init__(self, board = [" "]*64):
-        self.board = board
+    # Initializaton of board list 
+    board = [" "]*64
         
-
     # Basic methode for printing board
     def printBoard(self, highlited=['']):
         # Clearing the screen
@@ -26,13 +27,17 @@ class Checkerboard():
             if (i + 1) % 8 == 1: print(Back.MAGENTA +  str(abs(math.floor((i+1)/8)-8)), end=" " + Fore.RESET)
 
             # Logic responsible for displaying the board in correct pattern
-            if not i in highlited:                   
-                if i // 8 % 2 == 0:
-                    if i % 2 == 0:print(Back.WHITE + self.board[i], end=" " + Fore.RESET)
-                    else:print(Back.CYAN + self.board[i], end=" " + Fore.RESET)
-                elif i // 8 % 2 == 1:
-                    if i % 2 == 0:print(Back.CYAN + self.board[i], end=" " + Fore.RESET)
-                    else:print(Back.WHITE + self.board[i], end=" " + Fore.RESET)                    
+            if not i in highlited:
+                # checking for upper and lover case chars in order to display bolder char (as queen)
+                #if self.board[i]!=' ':                   
+                    if i // 8 % 2 == 0:
+                        if i % 2 == 0:print(Back.WHITE + self.board[i], end=" " + Fore.RESET)
+                        else:print(Back.CYAN + self.board[i], end=" " + Fore.RESET)
+                    elif i // 8 % 2 == 1:
+                        if i % 2 == 0:print(Back.CYAN + self.board[i], end=" " + Fore.RESET)
+                        else:print(Back.WHITE + self.board[i], end=" " + Fore.RESET)
+                #elif self.board[i].islower:self.players.printPawn(i)
+                #elif self.board[i].isupper:self.players.printQueen(i)                        
             else: 
                 if highlited[0]==i :print(Back.RED + self.board[i], end=" " + Fore.RESET)
                 else: print(Back.GREEN + self.board[i], end=" " + Fore.RESET)
