@@ -1,4 +1,4 @@
-
+from colorama import init, Fore, Back, Style
 from board import Checkerboard
 from players import HumanPlayer, ComputerPlayer
 
@@ -6,7 +6,8 @@ class Pieces(Checkerboard):
     player = HumanPlayer('o','O')
     computer = ComputerPlayer('x','X')
 
-   
+    # Initialization of colorama packet
+    init()
 
     def setPieces(self):
         for i in range(16):
