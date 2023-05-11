@@ -158,3 +158,4 @@ class ComputerPlayer(Players):
         self.board[pawn]=' '
         if isaQueen:self.board[move]=self.queen
         else: self.board[move]=self.piece
+        self.killPawn(move)
