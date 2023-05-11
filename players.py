@@ -51,12 +51,12 @@ class Players(Checkerboard):
             piece = 'o'
                 
         if deep==0 and self.movingLimit(chosenPiece, limit):
-            if chosenPiece + directions[0] % 8 != 0 and cheakBaord[chosenPiece+directions[0]]==' ':
+            if (chosenPiece + directions[0]) % 8 != 0 and cheakBaord[chosenPiece+directions[0]]==' ':
                 possibleMove.append(chosenPiece+directions[0])
             if chosenPiece % 8 != 0 and cheakBaord[chosenPiece+directions[1]]==' ':
                 possibleMove.append(chosenPiece+directions[1])
         if self.movingLimit(chosenPiece, limit, jump=True):
-            if chosenPiece + jumps[0] % 8 != 0 and cheakBaord[chosenPiece+directions[0]].upper() == piece.upper() and cheakBaord[chosenPiece+jumps[0]] == ' ':               
+            if (chosenPiece + jumps[0]) % 8 != 0 and cheakBaord[chosenPiece+directions[0]].upper() == piece.upper() and cheakBaord[chosenPiece+jumps[0]] == ' ':               
                 possibleMove.append(chosenPiece+jumps[0])
                 self.killPawn(chosenPiece+directions[0])
                 possibleMove.extend(self.rules(chosenPiece+jumps[0], cheakBaord, deep=deep+1))
