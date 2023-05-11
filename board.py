@@ -9,7 +9,16 @@ class Checkerboard():
     init()
 
     # Initializaton of board list 
-    board = [" "]*64
+    board = [
+        ' ',' ',' ',' ',' ',' ',' ',' ',
+        ' ',' ',' ',' ',' ',' ',' ',' ',
+        ' ',' ',' ',' ',' ',' ',' ',' ',
+        ' ','x',' ',' ',' ','x',' ',' ',
+        ' ',' ',' ',' ',' ',' ',' ',' ',
+        ' ',' ',' ','x',' ','x',' ',' ',
+        ' ',' ',' ',' ',' ',' ',' ',' ',
+        ' ',' ',' ',' ',' ',' ',' ',' '
+        ]
         
     # Basic methode for printing board
     def printBoard(self, highlited=['']):
