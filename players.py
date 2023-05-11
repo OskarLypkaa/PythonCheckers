@@ -5,10 +5,11 @@ from board import Checkerboard
 
 class Players(Checkerboard):
 
-    def __init__(self, piece, queen):
+    def __init__(self, piece, queen, movePath={}, chosenPath=[]):
         self.piece = piece
         self.queen = queen
-
+        self.movePath = movePath
+        self.chosenPath = chosenPath
     def getPiece(self):
         return self.piece
     
@@ -33,12 +34,18 @@ class Players(Checkerboard):
         else: raise ValueError
 
     # This methode wont work, it has to be corrected
-    def killPawn(self, pawn):
-        self.board[pawn] = ' '
+    def killPawn(self, move):
+        for killedPawns in self.movePath[move]:
+            self.board[killedPawns] = ' '
+        # Resetting values for future use
+        self.movePath = {}
+        self.chosenPath = []
+
 
     # Core for game movement, it contains rules of pawn movement calculated based on recuration
     def rules(self, chosenPiece, cheakBaord, deep=0):
         possibleMove=[]
+        lastLoop=True
         if isinstance(self, HumanPlayer):
             directions = [-7, -9]
             jumps = [-14, -18]
@@ -55,15 +62,22 @@ class Players(Checkerboard):
                 possibleMove.append(chosenPiece+directions[0])
             if chosenPiece % 8 != 0 and cheakBaord[chosenPiece+directions[1]]==' ':
                 possibleMove.append(chosenPiece+directions[1])
+
         if self.movingLimit(chosenPiece, limit, jump=True):
             if (chosenPiece + jumps[0]) % 8 != 0 and cheakBaord[chosenPiece+directions[0]].upper() == piece.upper() and cheakBaord[chosenPiece+jumps[0]] == ' ':               
-                possibleMove.append(chosenPiece+jumps[0])
-                self.killPawn(chosenPiece+directions[0])
+                self.chosenPath.append(chosenPiece+directions[0])
                 possibleMove.extend(self.rules(chosenPiece+jumps[0], cheakBaord, deep=deep+1))
+                lastLoop=False
             if chosenPiece % 8 != 0 and cheakBaord[chosenPiece+directions[1]].upper() == piece.upper() and cheakBaord[chosenPiece+jumps[1]] == ' ':
-                possibleMove.append(chosenPiece+jumps[1])
-                self.killPawn(chosenPiece+directions[0])
+                self.chosenPath.append(chosenPiece+directions[1])
                 possibleMove.extend(self.rules(chosenPiece+jumps[1], cheakBaord, deep=deep+1))
+                lastLoop=False
+
+
+        if lastLoop: 
+            possibleMove.append(chosenPiece)
+            self.movePath[chosenPiece] = self.chosenPath[:]
+            self.chosenPath.pop()
         return possibleMove
 
     # Checking if pawn is close to the end of a board in order to prevent errors
@@ -89,7 +103,7 @@ class HumanPlayer(Players):
         try:
             # Geting inputs of which pawn to move
             print("Choose pawn: ", end=" ")
-            pawn=input()
+            pawn = input()
             pawn = self.calculatePosition(pawn)
             self.checkIfPawnIsLegal(pawn)
 
@@ -99,10 +113,10 @@ class HumanPlayer(Players):
             highlighted.extend(self.rules(pawn, self.board))
             # Printing board again but with highlighted moves
             self.printBoard(highlighted)
-
+   
             # Geting inputs of which square to go
             print("Choose move: ", end=" ")
-            move=input()
+            move = input()
             move = self.calculatePosition(move)
             self.checkIfMoveIsLegal(move, highlighted)
             
@@ -117,6 +131,7 @@ class HumanPlayer(Players):
         self.board[pawn]=' '
         if isaQueen:self.board[move]=self.queen
         else: self.board[move]=self.piece
+        self.killPawn(move)
         
 class ComputerPlayer(Players):
     def __init__(self, piece, queen):
