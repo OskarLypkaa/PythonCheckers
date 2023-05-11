@@ -35,8 +35,9 @@ class Players(Checkerboard):
 
     # This methode wont work, it has to be corrected
     def killPawn(self, move):
-        for killedPawns in self.movePath[move]:
-            self.board[killedPawns] = ' '
+        if self.movePath:
+            for killedPawns in self.movePath[move]:
+                self.board[killedPawns] = ' '
         # Resetting values for future use
         self.movePath = {}
         self.chosenPath = []
@@ -74,7 +75,7 @@ class Players(Checkerboard):
                 lastLoop=False
 
 
-        if lastLoop: 
+        if lastLoop and deep!=0: 
             possibleMove.append(chosenPiece)
             self.movePath[chosenPiece] = self.chosenPath[:]
             self.chosenPath.pop()
@@ -123,8 +124,13 @@ class HumanPlayer(Players):
             # Finally moving a piece
             self.move(move, pawn)
         except:
-            print("Incorrect move!")          
-            time.sleep(2) 
+            print("Incorrect input!")          
+            time.sleep(1)
+            # Resetting values for future use
+            self.movePath = {}
+            self.chosenPath = []
+            self.printBoard() 
+            self.makeAMove()
 
     # Deleting old position of piece and placing it in a new, chosen one
     def move(self, move, pawn, isaQueen=None):
