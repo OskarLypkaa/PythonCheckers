@@ -1,4 +1,5 @@
 import os
+import sys
 import math
 from colorama import init, Fore, Back, Style
 
@@ -57,6 +58,9 @@ class Checkerboard():
         self.printBorder()
         # Resetting terminal color back to black
         print(Back.BLACK + Fore.RESET)
+        # Checking if game is either won, lost or tied
+        self.checkForEndGame()
+
 
     def isQueen(self, number):
         self.board[number] = self.board[number].upper()
@@ -67,3 +71,29 @@ class Checkerboard():
         for i in range(97,105):     
             print(Back.MAGENTA + chr(i), end=" " + Fore.RESET)
         print(Back.MAGENTA + '  ' + Fore.RESET)
+
+    def checkForEndGame(self):
+        has_x = False
+        has_o = False
+
+        # Listing thru board in order to find x and o elements 
+        for elem in self.board:
+            if elem == 'x' or elem == 'X':
+                has_x = True
+                break
+        for elem in self.board:
+            if elem == 'o' or elem == 'O':
+                has_o = True
+                break
+        
+        # Ending the game if there is a winner
+        if not has_x:self.gameWon(True)
+        if not has_o:self.gameWon(False)
+
+    def gameWon(self, win):
+        # Displaying the winner
+        if win: print('PLAYER HAS WON')
+        else: print('COMPUTER HAS WON')
+        # Exiting the game
+        sys.exit()
+        

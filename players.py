@@ -96,6 +96,12 @@ class Players(Checkerboard):
                 if piece < limit[1]: return True
             return False
 
+    # Making a queen each piece which get to the end of the border
+    def makeAQueen(self, move):
+        if isinstance(self, HumanPlayer) and move < 8:self.isQueen(move)
+        elif isinstance(self, ComputerPlayer) and move >= 56:self.isQueen(move)
+         
+
 class HumanPlayer(Players):
     def __init__(self, piece, queen):
         super().__init__(piece, queen)
