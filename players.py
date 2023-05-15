@@ -16,6 +16,18 @@ class Players(Checkerboard):
     def getQueen(self):
         return self.queen
 
+
+
+    def progress_bar(self, total, current, bar_length=20):
+        progress = current / total
+        completed_length = int(bar_length * progress)
+        remaining_length = bar_length - completed_length
+        completed_bar = '█' * completed_length
+        remaining_bar = '-' * remaining_length
+        print(f'[{completed_bar}{remaining_bar}] {progress:.1%}', end='\r', flush=True)
+
+   
+
     # Calculating position of choosen square. Changing e.g. c2 to 57 which is id of a board
     def calculatePosition(self, pawn):
         col = ord(pawn[:1])-96
@@ -36,8 +48,9 @@ class Players(Checkerboard):
     # This methode wont work, it has to be corrected
     def killPawn(self, move):
         if self.movePath:
-            for killedPawns in self.movePath[move]:
-                self.board[killedPawns] = ' '
+            if move in self.movePath:
+                for killedPawns in self.movePath[move]:
+                    self.board[killedPawns] = ' '
         # Resetting values for future use
         self.movePath = {}
         self.chosenPath = []
@@ -127,8 +140,9 @@ class HumanPlayer(Players):
             move = self.calculatePosition(move)
             self.checkIfMoveIsLegal(move, highlighted)
             
-            # Finally moving a piece
-            self.move(move, pawn)
+            # Finally moving a piece and checking if it's a queen or not
+            if self.board[pawn].isupper():self.move(move, pawn, True)
+            else: self.move(move, pawn)
         except:
             print("Incorrect input!")          
             time.sleep(1)
@@ -144,7 +158,8 @@ class HumanPlayer(Players):
         if isaQueen:self.board[move]=self.queen
         else: self.board[move]=self.piece
         self.killPawn(move)
-        
+        self.makeAQueen(move)
+
 class ComputerPlayer(Players):
     def __init__(self, piece, queen):
         super().__init__(piece, queen)
@@ -159,9 +174,16 @@ class ComputerPlayer(Players):
         new_pos = random.choice(possible_moves)
         self.move(new_pos, random_pawn)
 
+        print("Computer is thinking")
+        total_items = 100
+        for i in range(total_items + 1):
+            self.progress_bar(float(total_items), float(i))
+            time.sleep(0.02)
+
     # Deleting old position of piece and placing it in a new, chosen one
     def move(self, move, pawn, isaQueen=None):
         self.board[pawn]=' '
         if isaQueen:self.board[move]=self.queen
         else: self.board[move]=self.piece
         self.killPawn(move)
+        self.makeAQueen(move)
