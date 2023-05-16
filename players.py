@@ -60,32 +60,51 @@ class Players(Checkerboard):
     def rules(self, chosenPiece, cheakBaord, deep=0):
         possibleMove=[]
         lastLoop=True
+
         if isinstance(self, HumanPlayer):
-            directions = [-7, -9]
-            jumps = [-14, -18]
-            limit = [7 , 15]
-            piece = 'x'
+            if self.checkForQueen(chosenPiece):
+                directions = [-7, -9, 9, 7]
+                jumps = [-14, -18, 18, 14]
+                limit = [7 , 15, 48, 56]
+                piece = 'X'
+            else:
+                directions = [-7, -9]
+                jumps = [-14, -18]
+                limit = [7 , 15]
+                piece = 'x'
         elif isinstance(self, ComputerPlayer):
-            directions = [9, 7]
-            jumps = [18, 14]
-            limit = [48 , 56]
-            piece = 'o'
-                
+            if self.checkForQueen(chosenPiece):
+                directions = [ 9, 7, -7, -9]
+                jumps = [18, 14, -14, -18]
+                limit = [7 , 15, 48, 56]
+                piece = 'X'
+            else:
+                directions = [9, 7]
+                jumps = [18, 14]
+                limit = [48 , 56]
+                piece = 'o'
+                    
         if deep==0 and self.movingLimit(chosenPiece, limit):
-            if (chosenPiece + directions[0]) % 8 != 0 and cheakBaord[chosenPiece+directions[0]]==' ':
-                possibleMove.append(chosenPiece+directions[0])
-            if chosenPiece % 8 != 0 and cheakBaord[chosenPiece+directions[1]]==' ':
-                possibleMove.append(chosenPiece+directions[1])
+            tablelen = len(directions)//2
+            for i in range(tablelen):
+                if i == 1: i+=1
+                if (chosenPiece + directions[i]) % 8 != 0 and cheakBaord[chosenPiece+directions[i]]==' ':
+                    possibleMove.append(chosenPiece+directions[i])
+                if chosenPiece % 8 != 0 and cheakBaord[chosenPiece+directions[i+1]]==' ':
+                    possibleMove.append(chosenPiece+directions[i+1])
 
         if self.movingLimit(chosenPiece, limit, jump=True):
-            if (chosenPiece + jumps[0]) % 8 != 0 and cheakBaord[chosenPiece+directions[0]].upper() == piece.upper() and cheakBaord[chosenPiece+jumps[0]] == ' ':               
-                self.chosenPath.append(chosenPiece+directions[0])
-                possibleMove.extend(self.rules(chosenPiece+jumps[0], cheakBaord, deep=deep+1))
-                lastLoop=False
-            if chosenPiece % 8 != 0 and cheakBaord[chosenPiece+directions[1]].upper() == piece.upper() and cheakBaord[chosenPiece+jumps[1]] == ' ':
-                self.chosenPath.append(chosenPiece+directions[1])
-                possibleMove.extend(self.rules(chosenPiece+jumps[1], cheakBaord, deep=deep+1))
-                lastLoop=False
+            tablelen = len(directions)//2
+            for i in range(tablelen):
+                if i == 1: i+=1
+                if (chosenPiece + jumps[i]) % 8 != 0 and cheakBaord[chosenPiece+directions[i]].upper() == piece.upper() and cheakBaord[chosenPiece+jumps[i]] == ' ':               
+                    self.chosenPath.append(chosenPiece+directions[i])
+                    possibleMove.extend(self.rules(chosenPiece+jumps[i], cheakBaord, deep=deep+1))
+                    lastLoop=False
+                if chosenPiece % 8 != 0 and cheakBaord[chosenPiece+directions[i+1]].upper() == piece.upper() and cheakBaord[chosenPiece+jumps[i+1]] == ' ':
+                    self.chosenPath.append(chosenPiece+directions[i+1])
+                    possibleMove.extend(self.rules(chosenPiece+jumps[i+1], cheakBaord, deep=deep+1))
+                    lastLoop=False
 
 
         if lastLoop and deep!=0: 
@@ -187,3 +206,6 @@ class ComputerPlayer(Players):
         else: self.board[move]=self.piece
         self.killPawn(move)
         self.makeAQueen(move)
+
+    def minimax(self, board, depth, is_maximizing_player):
+        pass
