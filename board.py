@@ -11,14 +11,14 @@ class Checkerboard():
 
     # Initializaton of board list 
     board = [
+        'x',' ','x',' ','x',' ','x',' ',
         ' ',' ',' ',' ',' ',' ',' ',' ',
         ' ',' ',' ',' ',' ',' ',' ',' ',
         ' ',' ',' ',' ',' ',' ',' ',' ',
         ' ',' ',' ',' ',' ',' ',' ',' ',
         ' ',' ',' ',' ',' ',' ',' ',' ',
         ' ',' ',' ',' ',' ',' ',' ',' ',
-        ' ',' ',' ',' ',' ',' ',' ',' ',
-        ' ',' ',' ',' ',' ',' ',' ',' '
+        ' ','o',' ','o',' ','o',' ','o'
         ]
         
     # Basic methode for printing board
@@ -61,7 +61,10 @@ class Checkerboard():
         # Checking if game is either won, lost or tied
         self.checkForEndGame()
 
-
+    def checkForQueen(self, move):
+        if self.board[move].islower():return False
+        elif self.board[move].isupper():return True
+    
     def isQueen(self, number):
         self.board[number] = self.board[number].upper()
 
@@ -94,6 +97,5 @@ class Checkerboard():
         # Displaying the winner
         if win: print('PLAYER HAS WON')
         else: print('COMPUTER HAS WON')
-        # Exiting the game
-        sys.exit()
+        
         

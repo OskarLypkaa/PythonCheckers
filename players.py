@@ -10,13 +10,12 @@ class Players(Checkerboard):
         self.queen = queen
         self.movePath = movePath
         self.chosenPath = chosenPath
+ 
     def getPiece(self):
         return self.piece
     
     def getQueen(self):
         return self.queen
-
-
 
     def progress_bar(self, total, current, bar_length=20):
         progress = current / total
@@ -77,7 +76,7 @@ class Players(Checkerboard):
                 directions = [ 9, 7, -7, -9]
                 jumps = [18, 14, -14, -18]
                 limit = [7 , 15, 48, 56]
-                piece = 'X'
+                piece = 'O'
             else:
                 directions = [9, 7]
                 jumps = [18, 14]
@@ -183,29 +182,68 @@ class ComputerPlayer(Players):
     def __init__(self, piece, queen):
         super().__init__(piece, queen)
 
-    # Begining of an AI, now computer is listing all of the possible moves and chosing it randomly
     def makeAMove(self):
-        while True:
-            random_pawn = random.randint(0, 63)
-            if self.board[random_pawn] == self.piece or self.board[random_pawn] == self.queen:
-                possible_moves = self.rules(random_pawn, self.board)
-                if possible_moves: break
-        new_pos = random.choice(possible_moves)
-        self.move(new_pos, random_pawn)
-
-        print("Computer is thinking")
-        total_items = 100
-        for i in range(total_items + 1):
-            self.progress_bar(float(total_items), float(i))
-            time.sleep(0.02)
-
-    # Deleting old position of piece and placing it in a new, chosen one
-    def move(self, move, pawn, isaQueen=None):
-        self.board[pawn]=' '
-        if isaQueen:self.board[move]=self.queen
-        else: self.board[move]=self.piece
-        self.killPawn(move)
-        self.makeAQueen(move)
+        best_move = self.minimax(self.board, 4, True)[1]  # Wywołanie algorytmu Minimax z maksymalną głębokością 4
+        self.move(best_move[1], best_move[0])
 
     def minimax(self, board, depth, is_maximizing_player):
-        pass
+        if depth == 0 or self.isGameOver(board):
+            return self.evaluate(board), None
+
+        if is_maximizing_player:
+            max_eval = float('-inf')
+            best_move = None
+            possible_moves = self.getAllPossibleMoves(board, self.piece)
+            for move in possible_moves:
+                new_board = self.getNewBoardAfterMove(board, move[0], move[1])
+                evaluation = self.minimax(new_board, depth - 1, False)[0]
+                if evaluation > max_eval:
+                    max_eval = evaluation
+                    best_move = move
+            return max_eval, best_move
+        else:
+            min_eval = float('inf')
+            best_move = None
+            possible_moves = self.getAllPossibleMoves(board, self.computer)
+            for move in possible_moves:
+                new_board = self.getNewBoardAfterMove(board, move[0], move[1])
+                evaluation = self.minimax(new_board, depth - 1, True)[0]
+                if evaluation < min_eval:
+                    min_eval = evaluation
+                    best_move = move
+            return min_eval, best_move
+
+    def evaluate(self, board):
+        player_score = 0
+        computer_score = 0
+
+        for i in range(len(board)):
+            if board[i] == self.piece or board[i] == self.queen:
+                player_score += 1
+            elif board[i] == self.computer or board[i] == self.computer.upper():
+                computer_score += 1
+
+        return player_score - computer_score
+
+    def getAllPossibleMoves(self, board, player):
+        possible_moves = []
+        for i in range(len(board)):
+            if board[i] == player:
+                moves = self.rules(i, board)
+                for move in moves:
+                    possible_moves.append((i, move))
+        return possible_moves
+
+    def getNewBoardAfterMove(self, board, start, end):
+        new_board = board[:]
+        new_board[start] = ' '
+        new_board[end] = self.piece if self.piece.isupper() else self.queen
+        self.killPawn(end)
+        self.makeAQueen(end)
+        return new_board
+
+    def isGameOver(self, board):
+        player_moves = self.getAllPossibleMoves(board, self.piece)
+        computer_moves = self.getAllPossibleMoves(board, self.piece.upper())
+
+        return len(player_moves) == 0 or len(computer_moves) == 0
